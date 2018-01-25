@@ -3,9 +3,6 @@ title: API Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
   - shell
-  - ruby
-  - python
-  - javascript
 
 toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
@@ -19,69 +16,80 @@ search: true
 
 # Introduction
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+## Overview
 
-We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+Welcome to the Pentamic Accounting APIs!
 
-This example API documentation page was created with [Slate](https://github.com/lord/slate). Feel free to edit it and use it as a base for your own API's documentation.
+The purposes of these APIs are:
+
+- To provide access to Pentamic Accounting centralized server instance from Pentamic Accounting client applications.
+- Easily & securely integrating with other applications using widely accepted protocols and standards.
+
+This document provide technical information and manual for developers who want to interact with the Pentamic Accounting APIs.
+
+## Protocol
+
+Pentamic Accounting APIs are HTTP based APIs. We attempts to design our APIs conform to the RESTful principles. So you can interact with the APIs resources using HTTP Verbs (GET, POST, PUT, DELETE) and receive standard HTTP results.
+
+## Supported format
+
+Pentamic Accounting API supports both XML and JSON format for transferring data.
+JSON is the primary and recommended format because it is faster, smaller and easier to read. But we still support XML for older apps that don't understand JSON.
+
+## Security
+
+You can connect to the Pentamic Accouting APIs using HTTP or HTTPS (SSL), but the APIs only use Self-Signed Certificate.
+
+# Basic steps
+
+To connect to Pentamic Accounting APIs, follow these steps:
+
+- Contact our administrator to get specific APIs URLs, Client ID and Client Secret.
+- Use the Client ID and Client Secret to authenticate with our Authentication services and get an access token.
+- Use the access token to interact with the APIs.
+
+# Testing
+
+For testing purpose, the examples in this APIs docs use cURL as a HTTP Client to connect to the APIs.
 
 # Authentication
 
-> To authorize, use this code:
+Pentamic use separated authentication services to provide authentication to many of our applications.
 
-```ruby
-require 'kittn'
+The authentication services follow the OpenId Connect protocol and can authenticate both applications and users.
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-```
+For the integration purpose, we only demonstrate application authentications using Client Credentials flow.
 
-```python
-import kittn
+## Request token
 
-api = kittn.authorize('meowmeowmeow')
-```
+After getting the Client ID and Client Secret, request a token from the authentication services.
+
+> Request token:
 
 ```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
+curl -X POST
+     -H "Content-Type: application/x-www-form-urlencoded"
+     -H "Cache-Control: no-cache"
+     -d 'client_id=clientid&scope=pa-api&client_secret=clientsecret&grant_type=client_credentials'
+     "http://identity.pentamic.com.vn/connect/token"
 ```
 
-```javascript
-const kittn = require('kittn');
+> Replace `clientid` and `clientsecret` with your Client ID and Secret.
 
-let api = kittn.authorize('meowmeowmeow');
+## Add token to API request header
+
+> Using token:
+
+```shell
+curl -X POST
+     -H "Content-Type: application/x-www-form-urlencoded"
+     -H "Cache-Control: no-cache"
+     -d 'client_id=clientid&scope=pa-api&client_secret=clientsecret&grant_type=client_credentials'
+     "http://identity.pentamic.com.vn/connect/token"
 ```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
-
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
-</aside>
-
-# Kittens
 
 ## Get All Kittens
 
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
 
 ```shell
 curl "http://example.com/api/kittens"
@@ -124,10 +132,10 @@ This endpoint retrieves all kittens.
 
 ### Query Parameters
 
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
+| Parameter    | Default | Description                                                                      |
+| ------------ | ------- | -------------------------------------------------------------------------------- |
+| include_cats | false   | If set to true, the result will also include cats.                               |
+| available    | true    | If set to false, the result will include kittens that have already been adopted. |
 
 <aside class="success">
 Remember — a happy kitten is an authenticated kitten!
@@ -183,9 +191,9 @@ This endpoint retrieves a specific kitten.
 
 ### URL Parameters
 
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
+| Parameter | Description                      |
+| --------- | -------------------------------- |
+| ID        | The ID of the kitten to retrieve |
 
 ## Delete a Specific Kitten
 
@@ -233,7 +241,7 @@ This endpoint deletes a specific kitten.
 
 ### URL Parameters
 
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to delete
+| Parameter | Description                    |
+| --------- | ------------------------------ |
+| ID        | The ID of the kitten to delete |
 
