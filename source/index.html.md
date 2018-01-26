@@ -5,10 +5,11 @@ language_tabs: # must be one of https://git.io/vQNgJ
   - shell
 
 toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
-  - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
+  - <a href='mailto:info@pentamic.com'>Contact our administrator</a>
+  - <a href='http://pentamic.com'>Pentamic Website</a>
 
 includes:
+  - api-refrerence
   - errors
 
 search: true
@@ -18,12 +19,14 @@ search: true
 
 ## Overview
 
+> This is the code example pane. APIs using examples will display here.
+
 Welcome to the Pentamic Accounting APIs!
 
 The purposes of these APIs are:
 
-- To provide access to Pentamic Accounting centralized server instance from Pentamic Accounting client applications.
-- Easily & securely integrating with other applications using widely accepted protocols and standards.
+* To provide access to Pentamic Accounting centralized server instance from Pentamic Accounting client applications.
+* Easily & securely integrating with other applications using widely accepted protocols and standards.
 
 This document provide technical information and manual for developers who want to interact with the Pentamic Accounting APIs.
 
@@ -44,13 +47,21 @@ You can connect to the Pentamic Accouting APIs using HTTP or HTTPS (SSL), but th
 
 To connect to Pentamic Accounting APIs, follow these steps:
 
-- Contact our administrator to get specific APIs URLs, Client ID and Client Secret.
-- Use the Client ID and Client Secret to authenticate with our Authentication services and get an access token.
-- Use the access token to interact with the APIs.
+* Contact our administrator to get specific APIs informations like URLs, generated clients,...
+* Use the Client ID and Client Secret to authenticate with our Authentication services and get an access token.
+* Use the access token to interact with the APIs.
 
 # Testing
 
 For testing purpose, the examples in this APIs docs use cURL as a HTTP Client to connect to the APIs.
+cURL is a open source command line tool and library for transferring data with URLs.
+You can download and learn cURL [here](https://curl.haxx.se/)
+
+> Example HTTP GET Request using cURL
+
+```shell
+  curl https://curl.haxx.se
+```
 
 # Authentication
 
@@ -62,7 +73,13 @@ For the integration purpose, we only demonstrate application authentications usi
 
 ## Request token
 
-After getting the Client ID and Client Secret, request a token from the authentication services.
+Contact our administrator and get the specific client information, include:
+
+* Authentication server URL
+* Your Client ID and Client Secret
+* Your allowed scope
+
+After getting the information, request a token from the authentication services by sending a post request to the token endpoint `/connect/token` with grant type `client_credentials`
 
 > Request token:
 
@@ -70,178 +87,69 @@ After getting the Client ID and Client Secret, request a token from the authenti
 curl -X POST
      -H "Content-Type: application/x-www-form-urlencoded"
      -H "Cache-Control: no-cache"
-     -d 'client_id=clientid&scope=pa-api&client_secret=clientsecret&grant_type=client_credentials'
-     "http://identity.pentamic.com.vn/connect/token"
+     -d 'client_id=clientid&scope=allowedscope&client_secret=clientsecret&grant_type=client_credentials'
+     "https://identity.pentamic.com/connect/token"
 ```
 
-> Replace `clientid` and `clientsecret` with your Client ID and Secret.
+> Replace `clientid`, `clientsecret`, `allowedscope` with your Client ID and Secret.
 
-## Add token to API request header
+## Token response
 
-> Using token:
+### Result
+
+> Success request result:
+
+```json
+{
+  "access_token": "eyJh...",
+  "expires_in": 3600,
+  "token_type": "Bearer"
+}
+```
+
+**Explain:**
+
+Field | Meaning
+----- | -------
+`access_token` | The access token string
+`token_type`| Type of the received token
+`expires_in`| Time the token will expire in second
+
+### Error
+
+> Request error result:
+
+```json
+{
+  "error": "error_code"
+}
+```
+
+Possible error code:
+
+Error | Meaning
+----- | -------
+`invalid_client` | The client id or client secret is not correct. Check typo or contact our administrator.
+`invalid_scope` | The scope is not correct or the client does not allowed to access this scope
+`unsupported_grant_type` | The grant type is not correct. It must be `client_credentials`.
+
+## Making request
+
+Add the access token string you received to future API requests authorization header as following:
+
+`Authorization: {token_type} {access_token}`
+
+> Example using token:
 
 ```shell
-curl -X POST
-     -H "Content-Type: application/x-www-form-urlencoded"
+curl -X Get
+     -H "Authorization: Bearer access_token"
      -H "Cache-Control: no-cache"
-     -d 'client_id=clientid&scope=pa-api&client_secret=clientsecret&grant_type=client_credentials'
-     "http://identity.pentamic.com.vn/connect/token"
+     "http://api.pentamic.com/api/customers"
 ```
 
-## Get All Kittens
+> Replace and `access_token` with your access token string.
 
+## Refresh token
 
-```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
-```
-
-> The above command returns JSON structured like this:
-
-```json
-[
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
-]
-```
-
-This endpoint retrieves all kittens.
-
-### HTTP Request
-
-`GET http://example.com/api/kittens`
-
-### Query Parameters
-
-| Parameter    | Default | Description                                                                      |
-| ------------ | ------- | -------------------------------------------------------------------------------- |
-| include_cats | false   | If set to true, the result will also include cats.                               |
-| available    | true    | If set to false, the result will include kittens that have already been adopted. |
-
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
-
-## Get a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
-}
-```
-
-This endpoint retrieves a specific kitten.
-
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
-
-### HTTP Request
-
-`GET http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-| Parameter | Description                      |
-| --------- | -------------------------------- |
-| ID        | The ID of the kitten to retrieve |
-
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -X DELETE
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "deleted" : ":("
-}
-```
-
-This endpoint deletes a specific kitten.
-
-### HTTP Request
-
-`DELETE http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-| Parameter | Description                    |
-| --------- | ------------------------------ |
-| ID        | The ID of the kitten to delete |
-
+The client credential authorization flow does not support refresh token so when the token expired, you must request a new one using the methods above.
