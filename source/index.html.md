@@ -109,11 +109,11 @@ curl -X POST
 
 **Explain:**
 
-Field | Meaning
------ | -------
-`access_token` | The access token string
-`token_type`| Type of the received token
-`expires_in`| Time the token will expire in second
+| Field          | Meaning                              |
+| -------------- | ------------------------------------ |
+| `access_token` | The access token string              |
+| `token_type`   | Type of the received token           |
+| `expires_in`   | Time the token will expire in second |
 
 ### Error
 
@@ -127,11 +127,11 @@ Field | Meaning
 
 Possible error code:
 
-Error | Meaning
------ | -------
-`invalid_client` | The client id or client secret is not correct. Check typo or contact our administrator.
-`invalid_scope` | The scope is not correct or the client does not allowed to access this scope
-`unsupported_grant_type` | The grant type is not correct. It must be `client_credentials`.
+| Error                    | Meaning                                                                                 |
+| ------------------------ | --------------------------------------------------------------------------------------- |
+| `invalid_client`         | The client id or client secret is not correct. Check typo or contact our administrator. |
+| `invalid_scope`          | The scope is not correct or the client does not allowed to access this scope            |
+| `unsupported_grant_type` | The grant type is not correct. It must be `client_credentials`.                         |
 
 ## Making request
 
